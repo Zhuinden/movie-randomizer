@@ -26,8 +26,8 @@ public class FragmentStateChanger {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction().disallowAddToBackStack();
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 
-        List<BaseKey> previousState = stateChange.getPreviousState();
-        List<BaseKey> newState = stateChange.getNewState();
+        List<BaseKey> previousState = stateChange.getPreviousKeys();
+        List<BaseKey> newState = stateChange.getNewKeys();
         for(BaseKey oldKey : previousState) {
             Fragment fragment = fragmentManager.findFragmentByTag(oldKey.getFragmentTag());
             if(fragment != null) {
@@ -40,7 +40,7 @@ public class FragmentStateChanger {
         }
         for(BaseKey newKey : newState) {
             Fragment fragment = fragmentManager.findFragmentByTag(newKey.getFragmentTag());
-            if(newKey.equals(stateChange.topNewState())) {
+            if(newKey.equals(stateChange.topNewKey())) {
                 if(fragment != null) {
                     if(fragment.isDetached()) {
                         fragmentTransaction.attach(fragment);

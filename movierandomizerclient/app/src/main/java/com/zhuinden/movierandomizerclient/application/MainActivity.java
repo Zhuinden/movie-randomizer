@@ -15,8 +15,8 @@ import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.birbit.android.jobqueue.JobManager;
-import com.zhuinden.simplestack.BackstackDelegate;
-import com.zhuinden.simplestack.HistoryBuilder;
+import com.zhuinden.simplestack.History;
+import com.zhuinden.simplestack.SimpleStateChanger;
 import com.zhuinden.simplestack.StateChange;
 import com.zhuinden.simplestack.StateChanger;
 
@@ -30,25 +30,23 @@ import com.zhuinden.movierandomizerclient.utils.Toaster;
 import com.zhuinden.movierandomizerclient.utils.ViewUtils;
 import com.zhuinden.movierandomizerclient.utils.navigation.BaseKey;
 import com.zhuinden.movierandomizerclient.utils.navigation.FragmentStateChanger;
+import com.zhuinden.simplestack.navigator.Navigator;
+
+import javax.annotation.Nonnull;
+
 import io.realm.Realm;
 
 public class MainActivity
         extends AppCompatActivity
-        implements StateChanger {
+        implements SimpleStateChanger.NavigationHandler {
     private static final String TAG = "MainActivity";
 
-    BackstackDelegate backstackDelegate;
     FragmentStateChanger fragmentStateChanger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN); // don't pop up on start :(
 
-        backstackDelegate = new BackstackDelegate(null);
-        backstackDelegate.onCreate(savedInstanceState,
-                                   getLastCustomNonConfigurationInstance(),
-                                   HistoryBuilder.single(MoviesKey.create()));
-        backstackDelegate.registerForLifecycleCallbacks(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -58,7 +56,9 @@ public class MainActivity
         MovieApi movieApi = Injector.get().movieApi();
         movieApiHolder.setMovieApi(movieApi);
 
-        backstackDelegate.setStateChanger(this);
+        Navigator.configure()
+                .setStateChanger(new SimpleStateChanger(this))
+                .install(this, findViewById(R.id.container), History.single(MoviesKey.create()));
     }
 
     @Override
@@ -68,7 +68,7 @@ public class MainActivity
     }
 
     private Fragment getCurrentFragment() {
-        BaseKey currentKey = backstackDelegate.getBackstack().top();
+        BaseKey currentKey = Navigator.getBackstack(this).top();
         return getSupportFragmentManager().findFragmentByTag(currentKey.getFragmentTag());
     }
 
@@ -142,16 +142,11 @@ public class MainActivity
     }
 
     @Override
-    public Object onRetainCustomNonConfigurationInstance() {
-        return backstackDelegate.onRetainCustomNonConfigurationInstance();
-    }
-
-    @Override
     public void onBackPressed() {
         Fragment fragment = getCurrentFragment();
         if(fragment instanceof BackPressHandler) {
             if(!((BackPressHandler) fragment).onBackPressed()) {
-                if(!backstackDelegate.onBackPressed()) {
+                if(!Navigator.onBackPressed(this)) {
                     super.onBackPressed();
                 }
             }
@@ -159,14 +154,8 @@ public class MainActivity
     }
 
     @Override
-    public void handleStateChange(@NonNull StateChange stateChange, @NonNull Callback completionCallback) {
-        if(stateChange.topNewState().equals(stateChange.topPreviousState())) {
-            completionCallback.stateChangeComplete();
-            return;
-        }
-
+    public void onNavigationEvent(@Nonnull StateChange stateChange) {
         fragmentStateChanger.handleStateChange(stateChange);
-        completionCallback.stateChangeComplete();
     }
 
     public interface ActionHandler {
@@ -176,23 +165,4 @@ public class MainActivity
     public interface BackPressHandler {
         boolean onBackPressed();
     }
-
-    // helper methods
-    public void navigateTo(BaseKey key) {
-        backstackDelegate.getBackstack().goTo(key);
-    }
-
-    @SuppressLint("WrongConstant")
-    public static MainActivity get(Context context) {
-        return (MainActivity) context.getSystemService(TAG);
-    }
-
-    @Override
-    public Object getSystemService(@NonNull String name) {
-        if(TAG.equals(name)) {
-            return this;
-        }
-        return super.getSystemService(name);
-    }
-
 }
