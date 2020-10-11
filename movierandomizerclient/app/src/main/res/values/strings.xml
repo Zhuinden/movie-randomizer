@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Movie Randomizer</string>
+    <string name="refresh">Refresh</string>
+    <string name="set_server_url">Set Server URL</string>
+    <string name="genre_filters">Filter by Genre</string>
+    <string name="set">Set</string>
+    <string name="cancel">Cancel</string>
+    <string name="pick_film">Pick Film</string>
+    <string name="ok">OK</string>
+</resources>

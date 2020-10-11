@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorLight">#BFD1FF</color>
+    <color name="colorLighter">#DFF1FF</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="transparent_light_background">#33CACACA</color>
+    <color name="transparent_dark_background">#80808080</color>
+    <color name="dark_grey_text">#808080</color>
+    <color name="divider">#DEDEDE</color>
+</resources>

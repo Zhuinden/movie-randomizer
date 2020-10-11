@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_title_filter"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:title="Title search"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_refresh"
+        android:title="@string/refresh"/>
+    <item
+        android:id="@+id/action_set_ip_address"
+        android:title="@string/set_server_url"/>
+    <item
+        android:id="@+id/action_filters"
+        android:title="@string/genre_filters"/>
+</menu>
