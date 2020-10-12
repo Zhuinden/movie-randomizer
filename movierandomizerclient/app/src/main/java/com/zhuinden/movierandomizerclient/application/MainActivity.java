@@ -144,12 +144,15 @@ public class MainActivity
     @Override
     public void onBackPressed() {
         Fragment fragment = getCurrentFragment();
+        
         if(fragment instanceof BackPressHandler) {
-            if(!((BackPressHandler) fragment).onBackPressed()) {
-                if(!Navigator.onBackPressed(this)) {
-                    super.onBackPressed();
-                }
+            if(((BackPressHandler) fragment).onBackPressed()) {
+                return;
             }
+        }
+        
+        if(!Navigator.onBackPressed(this)) {
+            super.onBackPressed();
         }
     }
 
